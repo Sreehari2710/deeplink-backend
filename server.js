@@ -11,6 +11,11 @@ const PORT = process.env.PORT || 3000;
 // Trust proxy for Render
 app.set('trust proxy', 1);
 
+// Root route for health check
+app.get('/', (req, res) => {
+  res.send('MintLink Backend is running. Frontend is at <a href="https://toolkit.mintlink.co">toolkit.mintlink.co</a>');
+});
+
 // Middleware
 app.use(cors({
   origin: ['https://toolkit.mintlink.co', 'http://localhost:3000'], // Allow Hostinger domain and localhost
