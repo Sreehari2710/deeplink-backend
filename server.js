@@ -155,6 +155,22 @@ app.post('/api/update', requireAuth, (req, res) => {
   });
 });
 
+// Get URL endpoint (for client-side redirect without CORS issues)
+app.get('/api/url/:code', (req, res) => {
+  const code = req.params.code;
+  db.get('SELECT url FROM links WHERE code = ?', [code], (err, row) => {
+    if (err) return res.status(500).json({ error: 'Server error' });
+    if (row) {
+      // Record analytics asynchronously
+      const ref = req.get('Referer') || '';
+      // Simple analytics logging
+      db.run('INSERT INTO analytics (code, referrer, country) VALUES (?, ?, ?)', [code, ref, "API"]);
+      return res.json({ url: row.url });
+    }
+    res.status(404).json({ error: 'Not found' });
+  });
+});
+
 // Redirect handler (catch-all, must be last!)
 // Redirect handler (catch-all, must be last!)
 app.get(/^\/(.+)$/, (req, res) => {
